@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Results - Memory Vault</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul><li><strong>Memory Vault</strong></li></ul>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/gallery">Gallery</a></li>
+                <li><a href="/add" role="button" class="contrast">Add Memory</a></li>
+            </ul>
+        </nav>
+
+        <h2>Advanced Search</h2>
+        <form action="/search" method="POST">
+            <div class="grid">
+                <input type="search" name="search" placeholder="Search titles, descriptions, and captions..." value="{{ search_term }}">
+                <input type="text" name="tag" placeholder="Filter by tag..." value="{{ search_tag }}">
+                <input type="date" name="date" value="{{ search_date }}">
+            </div>
+            <button type="submit">Search</button>
+        </form>
+
+        {% if results %}
+            <p>Found {{ results|length }} memories.</p>
+            {% for memory in results %}
+            <article>
+                <header>
+                    <a href="/memory/{{ memory.memory_id }}"><strong>{{ memory.title }}</strong></a>
+                </header>
+                <p>{{ memory.description }}</p>
+                <footer>
+                    <small>{{ memory.memory_date.strftime('%B %d, %Y') }}</small>
+                </footer>
+            </article>
+            {% endfor %}
+        {% elif search_term or search_tag or search_date %}
+            <p>No memories found matching your criteria.</p>
+        {% else %}
+             <p>Enter a keyword, tag, or date to search for memories.</p>
+        {% endif %}
+    </main>
+</body>
+</html>
