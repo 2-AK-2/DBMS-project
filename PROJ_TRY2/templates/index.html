@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Memory Vault</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+</head>
+<body>
+    <main class="container">
+        <nav>
+            <ul><li><strong>Memory Vault</strong></li></ul>
+            <ul>
+                <li><a href="/home">Home</a></li>
+                <li><a href="/gallery">Gallery</a></li>
+                <li><a href="/search">Search</a></li>
+                <li><a href="/add" role="button" class="contrast">Add Memory</a></li>
+            </ul>
+        </nav>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <article class="{{ 'success' if category == 'success' else 'error' }}">
+                        {{ message }}
+                    </article>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <article>
+            <header><strong>Dashboard</strong></header>
+            <div class="grid">
+                <div>
+                    <h4>Total Memories</h4>
+                    <h2 style="margin: 0;">{{ stats.total_memories if stats else 0 }}</h2>
+                </div>
+            </div>
+        </article>
+        
+        <h2>Latest Memories</h2>
+        
+        {% if memories %}
+            {% for memory in memories %}
+            <article>
+                <header>
+                    <a href="/memory/{{ memory.memory_id }}"><strong>{{ memory.title }}</strong></a>
+                </header>
+                <p>{{ memory.description }}</p>
+                <footer>
+                    <small>{{ memory.memory_date.strftime('%B %d, %Y') if memory.memory_date }}</small>
+                </footer>
+            </article>
+            {% endfor %}
+        {% else %}
+            <p>No memories found. <a href="/add">Add your first one!</a></p>
+        {% endif %}
+    </main>
+</body>
+</html>
