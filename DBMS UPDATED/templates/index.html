@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Memory Vault</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <style>
+        :root {
+            --primary-color: #667eea;
+            --primary-dark: #764ba2;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            min-height: 100vh;
+        }
+
+        main.container {
+            background: white;
+            border-radius: 15px;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 0;
+            overflow: hidden;
+        }
+
+        nav {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+            margin: 0;
+        }
+
+        nav ul li strong {
+            color: white;
+            font-size: 24px;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            opacity: 0.8;
+            transform: translateY(-2px);
+        }
+
+        nav [role="button"] {
+            background: white;
+            color: var(--primary-color);
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        nav [role="button"]:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .dashboard-content {
+            padding: 40px;
+        }
+
+        .dashboard-header {
+            margin-bottom: 40px;
+            text-align: center;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 30px;
+        }
+
+        .dashboard-header h1 {
+            font-size: 32px;
+            color: #333;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .dashboard-header h1 i {
+            color: var(--primary-color);
+        }
+
+        .dashboard-header p {
+            color: #888;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8f9ff 0%, #f0f7ff 100%);
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            border: 2px solid #e0e7ff;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
+            border-color: var(--primary-color);
+        }
+
+        .stat-icon {
+            font-size: 36px;
+            color: var(--primary-color);
+            margin-bottom: 12px;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: var(--primary-dark);
+            margin: 10px 0;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 25px;
+            margin-top: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: #333;
+            font-size: 24px;
+        }
+
+        .section-header i {
+            color: var(--primary-color);
+            font-size: 24px;
+        }
+
+        .memory-card {
+            background: white;
+            border: 2px solid #f0f0f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .memory-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .memory-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 15px;
+            margin-bottom: 12px;
+        }
+
+        .memory-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+            flex: 1;
+        }
+
+        .memory-title a {
+            color: var(--primary-color);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        .memory-title a:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+
+        .memory-date {
+            font-size: 13px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            white-space: nowrap;
+        }
+
+        .memory-description {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .memory-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .memory-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: none;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-view {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+        }
+
+        .btn-view:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-edit {
+            background: #f59e0b;
+            color: white;
+        }
+
+        .btn-edit:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .empty-state i {
+            font-size: 64px;
+            color: #ddd;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .empty-state p {
+            color: #999;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .empty-state a {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .empty-state a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        article.success {
+            background: #f0fdf4;
+            border-left: 4px solid #22c55e;
+            color: #166534;
+            margin-bottom: 20px;
+        }
+
+        article.error {
+            background: #fef2f2;
+            border-left: 4px solid #ef4444;
+            color: #7f1d1d;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-content {
+                padding: 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .memory-header {
+                flex-direction: column;
+            }
+
+            .memory-date {
+                margin-top: 10px;
+            }
+
+            .memory-actions {
+                justify-content: center;
+            }
+
+            .btn-action {
+                flex: 1;
+                justify-content: center;
+                min-width: 100px;
+            }
+
+            .dashboard-header h1 {
+                font-size: 24px;
+            }
+
+            nav {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="container">
+        <!-- Navigation -->
+        <nav>
+            <ul>
+                <li><strong><i class="fas fa-book"></i> Memory Vault</strong></li>
+            </ul>
+            <ul>
+                <li><a href="/home"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="/gallery"><i class="fas fa-images"></i> Gallery</a></li>
+                <li><a href="/search"><i class="fas fa-search"></i> Search</a></li>
+                <li><a href="/audit_log"><i class="fas fa-history"></i> Audit Log</a></li>
+                <li><a href="/add" role="button"><i class="fas fa-plus"></i> Add Memory</a></li>
+            </ul>
+        </nav>
+
+        <div class="dashboard-content">
+            <!-- Flash Messages -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <article class="{{ 'success' if category == 'success' else 'error' }}">
+                {{ message }}
+            </article>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <h1><i class="fas fa-tachometer-alt"></i> Dashboard</h1>
+                <p>Welcome to your personal memory collection</p>
+            </div>
+
+            <!-- Statistics -->
+            {% if stats %}
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-images"></i></div>
+                    <div class="stat-number">{{ stats.total_memories }}</div>
+                    <div class="stat-label">Total Memories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-tags"></i></div>
+                    <div class="stat-number">{{ stats.total_tags }}</div>
+                    <div class="stat-label">Tags</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-photo-video"></i></div>
+                    <div class="stat-number">{{ stats.total_media }}</div>
+                    <div class="stat-label">Media Files</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon"><i class="fas fa-calendar"></i></div>
+                    <div class="stat-number">{{ stats.latest_memory_date or 'N/A' }}</div>
+                    <div class="stat-label">Latest Memory</div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Latest Memories Section -->
+            <div class="section-header">
+                <i class="fas fa-history"></i>
+                <h2>Latest Memories</h2>
+            </div>
+
+            {% if memories %}
+                {% for memory in memories %}
+                <div class="memory-card">
+                    <div class="memory-header">
+                        <h3 class="memory-title">
+                            <a href="/memory/{{ memory.memory_id }}">{{ memory.title }}</a>
+                        </h3>
+                        <div class="memory-date">
+                            <i class="fas fa-calendar-alt"></i>
+                            {{ memory.memory_date.strftime('%b %d, %Y') if memory.memory_date else 'N/A' }}
+                        </div>
+                    </div>
+
+                    <div class="memory-description">
+                        {{ memory.description }}
+                    </div>
+
+                    <div class="memory-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-info-circle"></i>
+                            ID: {{ memory.memory_id }}
+                        </div>
+                    </div>
+
+                    <div class="memory-actions">
+                        <a href="/memory/{{ memory.memory_id }}" class="btn-action btn-view">
+                            <i class="fas fa-eye"></i> View Details
+                        </a>
+                        <a href="/edit/{{ memory.memory_id }}" class="btn-action btn-edit">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <form method="POST" action="/delete_memory/{{ memory.memory_id }}" style="display: inline;">
+                            <button type="submit" class="btn-action btn-delete" onclick="return confirm('Are you sure you want to delete this memory?')">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="empty-state">
+                    <i class="fas fa-inbox"></i>
+                    <p>No memories found yet.</p>
+                    <a href="/add"><i class="fas fa-plus"></i> Add Your First Memory</a>
+                </div>
+            {% endif %}
+        </div>
+    </main>
+</body>
+</html>
