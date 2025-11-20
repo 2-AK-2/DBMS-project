@@ -259,8 +259,34 @@ def setup_database():
             END
         """)
         
+        # NEW INOUT PROCEDURE - UpdateMemoryCount
+        cursor.execute("DROP PROCEDURE IF EXISTS UpdateMemoryCount")
+        cursor.execute("""
+            CREATE PROCEDURE UpdateMemoryCount(
+                IN p_patient_id INT,
+                INOUT p_memory_count INT
+            )
+            BEGIN
+                DECLARE v_current_count INT DEFAULT 0;
+                
+                -- Get current memory count for patient
+                SELECT COUNT(*) INTO v_current_count 
+                FROM memories 
+                WHERE patient_id = p_patient_id;
+                
+                -- Calculate difference between input and actual count
+                IF p_memory_count IS NULL THEN
+                    SET p_memory_count = v_current_count;
+                ELSE
+                    -- You can add business logic here
+                    -- For example: validate count, apply limits, etc.
+                    SET p_memory_count = v_current_count;
+                END IF;
+            END
+        """)
+        
         conn.commit()
-        print("✓ Procedures created")
+        print("✓ Procedures created (5 total including INOUT)")
         
         print("\nCreating triggers...")
         
@@ -301,10 +327,16 @@ def setup_database():
         print("\n" + "=" * 60)
         print("✅ DATABASE SETUP COMPLETED SUCCESSFULLY!")
         print("=" * 60)
-        print("\n📊 Created:")
+        print("\n📊 Summary:")
         print("   • 7 Tables")
         print("   • 4 Functions")
-        print("   • 4 Stored Procedures")
+        print("   • 5 Stored Procedures")
+        print("     - ProcessAndAddTags (IN)")
+        print("     - AddMemoryWithTags (IN, OUT)")
+        print("     - UpdateMemoryWithTags (IN)")
+        print("     - DeleteMemoryWithAudit (IN)")
+        print("     - GetPatientDashboardStats (IN)")
+        print("     - UpdateMemoryCount (IN, INOUT) ⭐ NEW")
         print("   • 3 Triggers")
         print("\n🚀 You can now run: python3 app.py")
         print("=" * 60 + "\n")
@@ -318,5 +350,5 @@ def setup_database():
             cursor.close()
             conn.close()
 
-if __name__ == "__main__":
+if _name_ == "_main_":
     setup_database()
